@@ -4,83 +4,164 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-An interactive terminal-style portfolio website built with Next.js and Supabase. The site simulates a command-line interface where users can execute commands to view projects, blog posts, visited locations (via Google Maps API), and watched movies (via IMDb API).
+An interactive terminal-style portfolio website built with Next.js and Supabase. The site simulates a command-line interface where users can execute commands to view content stored in markdown files and display random images.
 
 **Key Technologies:**
-- Frontend: Next.js (React) with Tailwind CSS
-- Backend: Supabase (PostgreSQL database, Storage, Edge Functions)
+- Frontend: Next.js 15 (React) with TypeScript and Tailwind CSS
+- Backend: Supabase (PostgreSQL database)
 - Deployment: Vercel
-- Serverless: Supabase Edge Functions (Deno)
+- Package Manager: npm
 
-## Database Schema
+## Current Implementation Status
 
-**Core Tables:**
-- `projects`: (id, title, description, repo_url, live_url, technologies)
-- `blog_posts`: (id, slug, title, content_markdown, is_published, published_at)
-- `api_cache` (optional): (id, source_api, data, expires_at) - For caching external API responses
+### ✅ Completed Features
 
-**Security:**
-- Row Level Security (RLS) is mandatory on all tables
-- Only SELECT operations allowed publicly; no INSERT/UPDATE/DELETE from client
+**Core Terminal:**
+- Terminal.tsx - Main component with command processing and history
+- Input.tsx - Command input with arrow key history navigation
+- Output.tsx - Renders command output
+- ThemeSwitcher.tsx - UI controls for theme/color selection
 
-## Architecture
+**Theme System:**
+- ThemeContext.tsx - React context for theme state
+- Dark/Light mode with system preference detection
+- 5 accent colors: orange (default), green, cyan, purple, pink
+- Claude-inspired warm color palette for light mode
 
-### Frontend Components
-- `Terminal.tsx`: Main stateful component managing command history, API loading states, and theme
-- `Input.tsx`: Handles user input and command submission with history navigation
-- `Output.tsx`: Renders various output types (text, lists, errors, images, loading states)
-- `BlogPage.tsx`: Separate reader-friendly page at `/blog/[slug]`
+**Commands:**
+- `help` - Displays available commands
+- `clear` - Clears terminal history
+- `about` - Loads content from `content/about.md`
+- `resume` - Loads content from `content/resume.md`
+- `contact` - Loads content from `content/contact.md`
+- `cat` - Displays random image from `public/cats/` folder
 
-### Backend - Supabase Edge Functions
-Two critical serverless functions act as secure API proxies:
+**Content System:**
+- Markdown files in `content/` directory
+- API route at `/api/content/[slug]` for serving content
+- MarkdownContent.tsx - Renders markdown with clickable links
+- HelpContent.tsx - Dynamic help menu
+- Auto-linkification of URLs in markdown
 
-1. **get-locations**:
-   - Calls Google Maps API with securely stored key
-   - Returns formatted list of visited locations
+**Image Display:**
+- API route at `/api/cats` for random image selection
+- CatImage.tsx - Displays images with loading animation
+- Supports .jpg, .jpeg, .png, .gif, .webp formats
 
-2. **get-movies**:
-   - Calls IMDb API with securely stored key
-   - Returns formatted list of watched movies
+### 🚧 Placeholder/Future Features
 
-### State Management
-- React Hooks (useState, useContext)
-- Global context for theme management
-- Terminal component manages command history and API states
+**Projects & Blog** (commented out in code):
+- Commands exist but are disabled
+- To enable: Uncomment lines in Terminal.tsx and HelpContent.tsx
+- Will need implementation for data fetching
 
-## Security Requirements
+**Supabase Integration:**
+- Database schema designed but not yet used
+- Tables: `projects`, `blog_posts`
+- RLS policies defined in migration files
 
-**Critical:** API keys for Google Maps and IMDb MUST be stored as Supabase Edge Function Secrets, never in frontend code or `.env.local`.
+## File Structure
 
-**Frontend Environment Variables** (`.env.local`):
 ```
+terminalsite/
+├── app/
+│   ├── api/
+│   │   ├── cats/route.ts          # Random image API
+│   │   └── content/[slug]/route.ts # Content loading API
+│   ├── layout.tsx                  # Root layout with ThemeProvider
+│   └── page.tsx                    # Main page with Terminal
+├── components/
+│   ├── CatImage.tsx               # Image display component
+│   ├── HelpContent.tsx            # Help command output
+│   ├── Input.tsx                  # Command input with history
+│   ├── MarkdownContent.tsx        # Markdown renderer with links
+│   ├── Output.tsx                 # Command output renderer
+│   ├── Terminal.tsx               # Main terminal component
+│   ├── ThemeSwitcher.tsx          # Theme/color controls
+│   └── ThemeWrapper.tsx           # Applies dark class to DOM
+├── content/                        # Editable markdown files
+│   ├── about.md
+│   ├── contact.md
+│   └── resume.md
+├── context/
+│   └── ThemeContext.tsx           # Theme state management
+├── lib/
+│   ├── content.ts                 # File reading utilities
+│   └── supabase.ts                # Supabase client
+└── public/
+    └── cats/                      # Random images folder
+```
+
+## Development Guidelines
+
+### Adding New Commands
+
+1. Add case to switch statement in `Terminal.tsx` `processCommand()`
+2. Create component for dynamic output (if needed for theme reactivity)
+3. Add to help menu in `HelpContent.tsx`
+4. Create API route if fetching data
+
+### Editing Content
+
+- All content files are in `content/` directory
+- Markdown format with automatic URL linking
+- Headers (`#`, `##`, `###`) are styled with accent color
+- Changes are hot-reloaded in development
+
+### Theme Colors
+
+**Light Mode:**
+- Background: `#f5f5f0` (warm cream)
+- Text: `#2c2c2c` (near black)
+- Header: `#e8e8e0` (warm beige)
+- Borders: `#d4d4c8` (soft tan)
+
+**Dark Mode:**
+- Background: `#000000` (black)
+- Text: `#ffffff` (white)
+- Header: `#1f2937` (gray-800)
+- Borders: `#374151` (gray-700)
+
+**Header:** Consistent dark gray (`bg-gray-800`) in both themes
+
+### Component Patterns
+
+**Reactive Components:**
+- Components that display accent colors must be separate components
+- Use `useTheme()` hook to get current `accentColor`
+- Apply `accentColorClasses[accentColor]` for dynamic colors
+- Examples: HelpContent, MarkdownContent
+
+**Why:** React stores command output in state. If colors are hardcoded, they won't update when user changes theme.
+
+## Environment Variables
+
+`.env.local`:
+```env
 NEXT_PUBLIC_SUPABASE_URL=your_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 ```
 
-**Supabase Storage:**
-- Public bucket for images and static assets
-- Used for commands like `cat` to display images
+## Build & Deployment
 
-## Development Setup
+- Build: `npm run build`
+- Dev: `npm run dev`
+- Linting enforced (no unused variables, proper escaping)
+- Deployed to Vercel with automatic deployments from main branch
 
-1. Initialize Next.js app with Tailwind CSS
-2. Configure Supabase project with database tables and storage bucket
-3. Set up Edge Functions and add API keys as Supabase Secrets
-4. Enable RLS policies on all database tables
-5. Test Edge Functions locally using Supabase CLI before deployment
+## Known Patterns
 
-## Key Features to Implement
+- All markdown headers styled with accent color
+- URLs auto-detected and made clickable
+- Placeholder text adapts to theme
+- System theme detected on first load
+- Command history navigable with arrow keys
+- Images load with animation, auto-sized to terminal width
 
-- Dynamic command parser that calls appropriate data sources
-- Loading states for API calls
-- Theme customization (light/dark mode, text color)
-- Image rendering in terminal output
-- Markdown-powered blog with dual display (terminal + traditional web page)
-- Mobile-first responsive design
+## Future Enhancements
 
-## Programming Guidelines
-
-- **Modularity**: Separate command logic, components, and API functions
-- **Error Handling**: Wrap all API/database calls in try/catch, display clear terminal errors
-- **DRY Principle**: Abstract Edge Function calling logic into reusable helpers
-- **Input Validation**: Gracefully handle unknown commands in the parser
+- Projects command with Supabase integration
+- Blog command with markdown posts
+- Edge Functions for external API integration (Google Maps, IMDb)
+- Separate blog post pages at `/blog/[slug]`
+- API caching table for third-party data

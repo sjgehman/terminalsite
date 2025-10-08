@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import Input from './Input';
+import Input, { InputHandle } from './Input';
 import Output from './Output';
 import ThemeSwitcher from './ThemeSwitcher';
 import MarkdownContent from './MarkdownContent';
@@ -20,6 +20,7 @@ export default function Terminal() {
   const [history, setHistory] = useState<CommandOutput[]>([]);
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const terminalRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<InputHandle>(null);
   const { theme, accentColor } = useTheme();
 
   // Auto-scroll to bottom when new output is added
@@ -28,6 +29,21 @@ export default function Terminal() {
       terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
     }
   }, [history]);
+
+  // Handle clicks on terminal area to focus input
+  const handleTerminalClick = (e: React.MouseEvent) => {
+    // Don't focus if clicking on interactive elements
+    const target = e.target as HTMLElement;
+    const isInteractive = target.tagName === 'A' ||
+                         target.tagName === 'BUTTON' ||
+                         target.tagName === 'INPUT' ||
+                         target.closest('button') !== null ||
+                         target.closest('a') !== null;
+
+    if (!isInteractive) {
+      inputRef.current?.focus();
+    }
+  };
 
   const handleCommand = async (command: string) => {
     // Add command to history
@@ -119,19 +135,20 @@ export default function Terminal() {
     <div className={`min-h-screen w-full ${theme === 'dark' ? 'bg-gray-950' : 'bg-[#e8e8e0]'} flex items-center justify-center md:p-4`}>
       <div className={`w-full h-screen md:h-[85vh] md:max-h-[700px] md:max-w-4xl ${bgColor} ${textColor} font-mono flex flex-col md:rounded-lg md:shadow-2xl overflow-hidden border ${borderColor}`}>
         {/* Terminal Header */}
-        <div className={`${headerBg} px-4 py-2.5 flex items-center justify-between border-b ${borderColor}`}>
-          <span className={`${secondaryText} text-sm font-semibold`}>sam@portfolio:~</span>
+        <div className={`${headerBg} px-4 py-2.5 flex items-center justify-between border-b ${borderColor} flex-shrink-0`}>
+          <span className={`${secondaryText} text-sm font-semibold`}>sam@code:~</span>
           <ThemeSwitcher />
         </div>
 
         {/* Terminal Output */}
         <div
           ref={terminalRef}
-          className="flex-1 overflow-y-auto p-4 space-y-2"
+          className="flex-1 overflow-y-auto p-4 space-y-2 min-h-0 cursor-text"
+          onClick={handleTerminalClick}
         >
           {/* Welcome message */}
           <div className="mb-4">
-            <p className={accentColorClasses[accentColor]}>Welcome to Sam&apos;s Portfolio Terminal</p>
+            <p className={accentColorClasses[accentColor]}>Welcome to Sam&apos;s Website</p>
             <p className={theme === 'dark' ? 'text-gray-400' : 'text-[#4c4c4c]'}>Type &apos;help&apos; to see available commands</p>
           </div>
 
@@ -142,7 +159,7 @@ export default function Terminal() {
         </div>
 
         {/* Terminal Input */}
-        <Input onSubmit={handleCommand} commandHistory={commandHistory} />
+        <Input ref={inputRef} onSubmit={handleCommand} commandHistory={commandHistory} />
       </div>
     </div>
   );
