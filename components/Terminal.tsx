@@ -20,7 +20,7 @@ export default function Terminal() {
   const [history, setHistory] = useState<CommandOutput[]>([]);
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const terminalRef = useRef<HTMLDivElement>(null);
-  const { theme, accentColor, setTheme, setAccentColor } = useTheme();
+  const { theme, accentColor } = useTheme();
 
   // Auto-scroll to bottom when new output is added
   useEffect(() => {
@@ -49,7 +49,7 @@ export default function Terminal() {
 
   const processCommand = async (command: string): Promise<React.ReactNode> => {
     const trimmedCommand = command.trim().toLowerCase();
-    const [cmd, ...args] = trimmedCommand.split(' ');
+    const cmd = trimmedCommand.split(' ')[0];
 
     switch (cmd) {
       case 'help':
@@ -71,7 +71,7 @@ export default function Terminal() {
           } else {
             return <p className="text-red-400">Failed to load content</p>;
           }
-        } catch (error) {
+        } catch {
           return <p className="text-red-400">Error loading content</p>;
         }
 
@@ -85,7 +85,7 @@ export default function Terminal() {
           } else {
             return <p className="text-red-400">No cat images found. Add images to /public/cats/ folder!</p>;
           }
-        } catch (error) {
+        } catch {
           return <p className="text-red-400">Error loading cat image</p>;
         }
 

@@ -13,7 +13,7 @@ export default function HelpContent() {
       <p className="ml-4">about - Learn about me</p>
       <p className="ml-4">resume - View my resume</p>
       <p className="ml-4">contact - Get in touch</p>
-      <p className="ml-4">cat - It's a cat</p>
+      <p className="ml-4">cat - It&apos;s a cat</p>
       {/* <p className="ml-4">projects - View my projects</p> */}
       {/* <p className="ml-4">blog - Read my blog posts</p> */}
     </div>

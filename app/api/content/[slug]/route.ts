@@ -25,7 +25,7 @@ export async function GET(
     }
 
     return NextResponse.json({ content });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to load content' }, { status: 500 });
   }
 }

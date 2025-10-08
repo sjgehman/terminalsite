@@ -23,7 +23,7 @@ export async function GET() {
     const randomImage = imageFiles[Math.floor(Math.random() * imageFiles.length)];
 
     return NextResponse.json({ image: `/cats/${randomImage}` });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to load cat images' }, { status: 500 });
   }
 }

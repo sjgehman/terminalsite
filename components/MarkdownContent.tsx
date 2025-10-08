@@ -7,7 +7,7 @@ interface MarkdownContentProps {
 }
 
 export default function MarkdownContent({ content }: MarkdownContentProps) {
-  const { accentColor, theme } = useTheme();
+  const { accentColor } = useTheme();
 
   const lines = content.split('\n').filter((line: string) => line.trim());
 
