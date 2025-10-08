@@ -6,6 +6,7 @@ import Output from './Output';
 import ThemeSwitcher from './ThemeSwitcher';
 import MarkdownContent from './MarkdownContent';
 import HelpContent from './HelpContent';
+import CatImage from './CatImage';
 import { useTheme, accentColorClasses } from '@/context/ThemeContext';
 
 export interface CommandOutput {
@@ -72,6 +73,20 @@ export default function Terminal() {
           }
         } catch (error) {
           return <p className="text-red-400">Error loading content</p>;
+        }
+
+      case 'cat':
+        try {
+          const response = await fetch('/api/cats');
+          const data = await response.json();
+
+          if (response.ok) {
+            return <CatImage imagePath={data.image} />;
+          } else {
+            return <p className="text-red-400">No cat images found. Add images to /public/cats/ folder!</p>;
+          }
+        } catch (error) {
+          return <p className="text-red-400">Error loading cat image</p>;
         }
 
       // TODO: Uncomment when ready to add projects functionality
