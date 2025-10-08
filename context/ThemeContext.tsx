@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 
 type Theme = 'dark' | 'light';
-type AccentColor = 'green' | 'cyan' | 'purple' | 'pink' | 'orange';
+type AccentColor = 'green' | 'blue' | 'purple' | 'pink' | 'orange';
 
 interface ThemeContextType {
   theme: Theme;
@@ -54,10 +54,10 @@ export function useTheme() {
 
 export const accentColorClasses = {
   green: 'text-[#059669] dark:text-green-400',
-  cyan: 'text-[#0891b2] dark:text-cyan-400',
+  blue: 'text-[#0891b2] dark:text-cyan-400',
   purple: 'text-[#7c3aed] dark:text-purple-400',
   pink: 'text-[#db2777] dark:text-pink-400',
   orange: 'text-[#ea580c] dark:text-orange-400',
 };
 
-export const accentColors: AccentColor[] = ['orange', 'green', 'cyan', 'purple', 'pink'];
+export const accentColors: AccentColor[] = ['orange', 'green', 'blue', 'purple', 'pink'];

@@ -67,6 +67,20 @@ export default function Terminal() {
     const trimmedCommand = command.trim().toLowerCase();
     const cmd = trimmedCommand.split(' ')[0];
 
+    // Easter eggs - check full command string for these patterns
+    if (trimmedCommand.includes('meaning of life')) {
+      return <p className={theme === 'dark' ? 'text-green-400' : 'text-green-600'}>42</p>;
+    }
+    if (trimmedCommand.includes('neo')) {
+      return <p className={theme === 'dark' ? 'text-green-400' : 'text-green-600'}>Follow the white rabbit.</p>;
+    }
+    if (trimmedCommand.includes('open the pod bay doors')) {
+      return <p className={theme === 'dark' ? 'text-red-400' : 'text-red-600'}>I&apos;m sorry, Dave. I&apos;m afraid I can&apos;t do that.</p>;
+    }
+    if (trimmedCommand.includes('rm -rf /') || trimmedCommand.includes('rm -rf/')) {
+      return <p className={theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'}>Nice try, slick.</p>;
+    }
+
     switch (cmd) {
       case 'help':
         return <HelpContent />;
@@ -74,6 +88,12 @@ export default function Terminal() {
       case 'clear':
         setHistory([]);
         return null;
+
+      case 'ping':
+        return <p className={theme === 'dark' ? 'text-gray-300' : 'text-[#2c2c2c]'}>pong</p>;
+
+      case 'whoami':
+        return <p className={theme === 'dark' ? 'text-gray-300' : 'text-[#2c2c2c]'}>You are the user. The one in control.</p>;
 
       case 'about':
       case 'resume':
@@ -113,6 +133,15 @@ export default function Terminal() {
       // case 'blog':
       //   return <p className="text-yellow-400">Loading blog posts...</p>;
 
+      case 'hello':
+      case 'hi':
+      case 'hey':
+        return (
+          <p className={theme === 'dark' ? 'text-gray-300' : 'text-[#2c2c2c]'}>
+            Hello! Please try another command such as &apos;help&apos;.
+          </p>
+        );
+
       case '':
         return null;
 
@@ -129,13 +158,14 @@ export default function Terminal() {
   const textColor = theme === 'dark' ? 'text-white' : 'text-[#2c2c2c]';
   const headerBg = theme === 'dark' ? 'bg-gray-800' : 'bg-gray-800';
   const borderColor = theme === 'dark' ? 'border-gray-700' : 'border-[#d4d4c8]';
+  const headerBorderColor = theme === 'dark' ? 'border-gray-700' : 'border-gray-600';
   const secondaryText = theme === 'dark' ? 'text-gray-400' : 'text-gray-400';
 
   return (
-    <div className={`min-h-screen w-full ${theme === 'dark' ? 'bg-gray-950' : 'bg-[#e8e8e0]'} flex items-center justify-center md:p-4`}>
-      <div className={`w-full h-screen md:h-[85vh] md:max-h-[700px] md:max-w-4xl ${bgColor} ${textColor} font-mono flex flex-col md:rounded-lg md:shadow-2xl overflow-hidden border ${borderColor}`}>
+    <div className={`min-h-screen w-full ${theme === 'dark' ? 'bg-gray-950' : 'bg-[#e8e8e0]'} md:flex md:items-center md:justify-center md:p-4`}>
+      <div className={`w-full h-screen md:h-[85vh] md:max-h-[700px] md:max-w-4xl ${bgColor} ${textColor} font-mono flex flex-col md:rounded-lg md:shadow-2xl overflow-hidden border-0 md:border ${borderColor}`}>
         {/* Terminal Header */}
-        <div className={`${headerBg} px-4 py-2.5 flex items-center justify-between border-b ${borderColor} flex-shrink-0`}>
+        <div className={`${headerBg} px-4 py-2.5 flex items-center justify-between border-b ${headerBorderColor} flex-shrink-0`}>
           <span className={`${secondaryText} text-sm font-semibold`}>sam@code:~</span>
           <ThemeSwitcher />
         </div>
