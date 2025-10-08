@@ -2,6 +2,20 @@ import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 
+// Store shuffled deck and current index in memory
+// In production, this resets when the serverless function cold starts
+let imageDeck: string[] = [];
+let currentIndex = 0;
+
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
 export async function GET() {
   try {
     const catsDirectory = path.join(process.cwd(), 'public', 'cats');
@@ -19,14 +33,21 @@ export async function GET() {
       return NextResponse.json({ error: 'No cat images found' }, { status: 404 });
     }
 
-    // Select a random image
-    const randomImage = imageFiles[Math.floor(Math.random() * imageFiles.length)];
+    // Initialize or reset the deck when empty or when file list changes
+    if (imageDeck.length === 0 || currentIndex >= imageDeck.length) {
+      imageDeck = shuffleArray(imageFiles);
+      currentIndex = 0;
+    }
+
+    // Get next image from the shuffled deck
+    const selectedImage = imageDeck[currentIndex];
+    currentIndex++;
 
     // Add cache-busting timestamp to ensure fresh images
     const cacheBuster = Date.now();
 
     return NextResponse.json(
-      { image: `/cats/${randomImage}?t=${cacheBuster}` },
+      { image: `/cats/${selectedImage}?t=${cacheBuster}` },
       {
         headers: {
           'Cache-Control': 'no-store, no-cache, must-revalidate',
