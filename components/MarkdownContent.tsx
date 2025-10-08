@@ -35,17 +35,17 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 break-words overflow-wrap-anywhere">
       {lines.map((line: string, index: number) => {
         // Handle markdown headers
         if (line.startsWith('# ')) {
-          return <p key={index} className={`${accentColorClasses[accentColor]} font-bold text-lg`}>{line.slice(2)}</p>;
+          return <p key={index} className={`${accentColorClasses[accentColor]} font-bold text-lg break-words`}>{line.slice(2)}</p>;
         } else if (line.startsWith('## ')) {
-          return <p key={index} className="font-bold mt-4">{line.slice(3)}</p>;
+          return <p key={index} className="font-bold mt-4 break-words">{line.slice(3)}</p>;
         } else if (line.startsWith('### ')) {
-          return <p key={index} className="font-semibold mt-2">{line.slice(4)}</p>;
+          return <p key={index} className="font-semibold mt-2 break-words">{line.slice(4)}</p>;
         }
-        return <p key={index}>{linkifyText(line)}</p>;
+        return <p key={index} className="break-words">{linkifyText(line)}</p>;
       })}
     </div>
   );

@@ -20,3 +20,7 @@ export function getResume(): string {
 export function getContact(): string {
   return getContent('contact.md');
 }
+
+export function getProjects(): string {
+  return getContent('projects.md');
+}

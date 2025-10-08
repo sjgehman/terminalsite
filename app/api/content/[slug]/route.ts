@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getAbout, getResume, getContact } from '@/lib/content';
+import { getAbout, getResume, getContact, getProjects } from '@/lib/content';
 
 export async function GET(
   request: Request,
@@ -19,6 +19,9 @@ export async function GET(
         break;
       case 'contact':
         content = getContact();
+        break;
+      case 'projects':
+        content = getProjects();
         break;
       default:
         return NextResponse.json({ error: 'Content not found' }, { status: 404 });

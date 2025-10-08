@@ -7,6 +7,7 @@ import ThemeSwitcher from './ThemeSwitcher';
 import MarkdownContent from './MarkdownContent';
 import HelpContent from './HelpContent';
 import CatImage from './CatImage';
+import BlogList from './BlogList';
 import { useTheme, accentColorClasses } from '@/context/ThemeContext';
 
 export interface CommandOutput {
@@ -130,11 +131,33 @@ export default function Terminal() {
 
       // TODO: Uncomment when ready to add projects functionality
       // case 'projects':
-      //   return <p className="text-yellow-400">Loading projects...</p>;
+      //   try {
+      //     const response = await fetch(`/api/content/projects`);
+      //     const data = await response.json();
+      //
+      //     if (response.ok) {
+      //       return <MarkdownContent content={data.content} />;
+      //     } else {
+      //       return <p className="text-red-400">Failed to load content</p>;
+      //     }
+      //   } catch {
+      //     return <p className="text-red-400">Error loading content</p>;
+      //   }
 
       // TODO: Uncomment when ready to add blog functionality
       // case 'blog':
-      //   return <p className="text-yellow-400">Loading blog posts...</p>;
+      //   try {
+      //     const response = await fetch('/api/blog');
+      //     const data = await response.json();
+      //
+      //     if (response.ok) {
+      //       return <BlogList posts={data.posts} />;
+      //     } else {
+      //       return <p className="text-red-400">Failed to load blog posts</p>;
+      //     }
+      //   } catch {
+      //     return <p className="text-red-400">Error loading blog posts</p>;
+      //   }
 
       case 'hello':
       case 'hi':
