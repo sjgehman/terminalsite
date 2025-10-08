@@ -52,15 +52,18 @@ export default function Terminal() {
     // Process command and get output
     const output = await processCommand(command);
 
-    // Add to display history
-    const newOutput: CommandOutput = {
-      id: Date.now().toString(),
-      command,
-      output,
-      timestamp: new Date(),
-    };
+    // Don't add to display history if command is 'clear' (it already cleared the history)
+    if (command.trim().toLowerCase() !== 'clear') {
+      // Add to display history
+      const newOutput: CommandOutput = {
+        id: Date.now().toString(),
+        command,
+        output,
+        timestamp: new Date(),
+      };
 
-    setHistory((prev) => [...prev, newOutput]);
+      setHistory((prev) => [...prev, newOutput]);
+    }
   };
 
   const processCommand = async (command: string): Promise<React.ReactNode> => {
@@ -170,10 +173,10 @@ export default function Terminal() {
           <ThemeSwitcher />
         </div>
 
-        {/* Terminal Output */}
+        {/* Terminal Content - Output and Input together */}
         <div
           ref={terminalRef}
-          className="flex-1 overflow-y-auto p-4 space-y-2 min-h-0 cursor-text"
+          className="flex-1 overflow-y-auto p-4 space-y-2 cursor-text"
           onClick={handleTerminalClick}
         >
           {/* Welcome message */}
@@ -186,10 +189,10 @@ export default function Terminal() {
           {history.map((item) => (
             <Output key={item.id} command={item.command} output={item.output} />
           ))}
-        </div>
 
-        {/* Terminal Input */}
-        <Input ref={inputRef} onSubmit={handleCommand} commandHistory={commandHistory} />
+          {/* Terminal Input - now inline */}
+          <Input ref={inputRef} onSubmit={handleCommand} commandHistory={commandHistory} />
+        </div>
       </div>
     </div>
   );

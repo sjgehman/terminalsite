@@ -104,7 +104,7 @@ const Input = forwardRef<InputHandle, InputProps>(({ onSubmit, commandHistory },
   const placeholderColor = theme === 'dark' ? 'placeholder:text-gray-600' : 'placeholder:text-[#8c8c8c]';
 
   return (
-    <div className={`border-t ${borderColor} p-4 pt-6 pb-8 md:pt-4 md:pb-4 flex items-center gap-2 flex-shrink-0 min-h-[80px] md:min-h-0`}>
+    <div className="flex items-center gap-2 py-1">
       <span className={accentColorClasses[accentColor]}>$</span>
       <input
         ref={inputRef}
