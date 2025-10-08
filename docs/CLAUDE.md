@@ -4,13 +4,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-An interactive terminal-style portfolio website built with Next.js and Supabase. The site simulates a command-line interface where users can execute commands to view content stored in markdown files and display random images.
+An interactive terminal-style portfolio website built with Next.js. The site simulates a command-line interface where users can execute commands to view content stored in markdown files, display random images, and access a standalone blog with filtering and sorting.
 
 **Key Technologies:**
-- Frontend: Next.js 15 (React) with TypeScript and Tailwind CSS
-- Backend: Supabase (PostgreSQL database)
+- Frontend: Next.js 15 (React) with TypeScript and Tailwind CSS v4
+- Markdown: react-markdown and gray-matter
+- Analytics: Vercel Analytics
 - Deployment: Vercel
 - Package Manager: npm
+
+**Note:** Supabase was removed - all content is now markdown-based
 
 ## Current Implementation Status
 
@@ -28,7 +31,7 @@ An interactive terminal-style portfolio website built with Next.js and Supabase.
 - 5 accent colors: orange (default), green, cyan, purple, pink
 - Claude-inspired warm color palette for light mode
 
-**Commands:**
+**Terminal Commands (Active):**
 - `help` - Displays available commands
 - `clear` - Clears terminal history
 - `about` - Loads content from `content/about.md`
@@ -36,29 +39,43 @@ An interactive terminal-style portfolio website built with Next.js and Supabase.
 - `contact` - Loads content from `content/contact.md`
 - `cat` - Displays random image from `public/cats/` folder
 
+**Terminal Commands (Commented Out - Ready to Enable):**
+- `blog` - Shows recent blog posts with links to standalone blog
+- `projects` - Loads content from `content/projects.md`
+
 **Content System:**
 - Markdown files in `content/` directory
-- API route at `/api/content/[slug]` for serving content
-- MarkdownContent.tsx - Renders markdown with clickable links
+- API route at `/api/content/[slug]` for serving about/resume/contact/projects
+- API route at `/api/blog` for fetching blog post metadata
+- MarkdownContent.tsx - Renders markdown with clickable links, word-breaking for long URLs
 - HelpContent.tsx - Dynamic help menu
 - Auto-linkification of URLs in markdown
+
+**Blog System:**
+- Standalone blog at `/blog` with listing page
+- Individual posts at `/blog/[slug]`
+- Filtering by tags, sorting by date (newest/oldest)
+- Shared theme context with terminal
+- BlogListClient.tsx - Blog listing with filters
+- BlogPostClient.tsx - Individual post view
+- Blog posts stored in `content/blog/*.md` with frontmatter
 
 **Image Display:**
 - API route at `/api/cats` for random image selection
 - CatImage.tsx - Displays images with loading animation
 - Supports .jpg, .jpeg, .png, .gif, .webp formats
 
-### 🚧 Placeholder/Future Features
+### 🚧 Future Features (Commented Out)
 
-**Projects & Blog** (commented out in code):
-- Commands exist but are disabled
-- To enable: Uncomment lines in Terminal.tsx and HelpContent.tsx
-- Will need implementation for data fetching
+**Terminal Commands Awaiting Content:**
+- `blog` command - Built and ready, commented out until real blog posts exist
+- `projects` command - Built and ready, commented out until real projects exist
+- To enable: Uncomment in `components/Terminal.tsx` and `components/HelpContent.tsx`
 
-**Supabase Integration:**
-- Database schema designed but not yet used
-- Tables: `projects`, `blog_posts`
-- RLS policies defined in migration files
+**Why Commented Out:**
+- Waiting for real content to replace placeholder posts
+- All functionality is complete and tested
+- Can be enabled by uncommenting ~10 lines of code
 
 ## File Structure
 
@@ -66,11 +83,20 @@ An interactive terminal-style portfolio website built with Next.js and Supabase.
 terminalsite/
 ├── app/
 │   ├── api/
-│   │   ├── cats/route.ts          # Random image API
+│   │   ├── blog/route.ts           # Blog posts API
+│   │   ├── cats/route.ts           # Random image API
 │   │   └── content/[slug]/route.ts # Content loading API
+│   ├── blog/
+│   │   ├── [slug]/page.tsx        # Individual blog post page
+│   │   ├── layout.tsx             # Blog layout with theme
+│   │   └── page.tsx               # Blog listing page
 │   ├── layout.tsx                  # Root layout with ThemeProvider
 │   └── page.tsx                    # Main page with Terminal
 ├── components/
+│   ├── BlogHeader.tsx             # Blog page header with theme switcher
+│   ├── BlogList.tsx               # Blog list for terminal (commented out)
+│   ├── BlogListClient.tsx         # Blog listing with filters/sort
+│   ├── BlogPostClient.tsx         # Individual blog post view
 │   ├── CatImage.tsx               # Image display component
 │   ├── HelpContent.tsx            # Help command output
 │   ├── Input.tsx                  # Command input with history
@@ -80,14 +106,18 @@ terminalsite/
 │   ├── ThemeSwitcher.tsx          # Theme/color controls
 │   └── ThemeWrapper.tsx           # Applies dark class to DOM
 ├── content/                        # Editable markdown files
+│   ├── blog/                      # Blog posts with frontmatter
+│   │   ├── building-my-portfolio.md
+│   │   ├── first-blog-post.md
+│   │   └── learning-typescript.md
 │   ├── about.md
 │   ├── contact.md
+│   ├── projects.md
 │   └── resume.md
 ├── context/
 │   └── ThemeContext.tsx           # Theme state management
 ├── lib/
-│   ├── content.ts                 # File reading utilities
-│   └── supabase.ts                # Supabase client
+│   └── content.ts                 # File reading utilities
 └── public/
     └── cats/                      # Random images folder
 ```
@@ -136,11 +166,9 @@ terminalsite/
 
 ## Environment Variables
 
-`.env.local`:
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
-```
+`.env.local` is currently empty - no environment variables required.
+
+Previously used for Supabase (now removed).
 
 ## Build & Deployment
 
@@ -158,10 +186,18 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 - Command history navigable with arrow keys
 - Images load with animation, auto-sized to terminal width
 
+## Enabling Commented Features
+
+To enable blog and projects commands in the terminal:
+
+1. **Terminal.tsx**: Uncomment the blog and projects case blocks (lines ~133-160)
+2. **HelpContent.tsx**: Uncomment the blog and projects help lines (lines ~17-18)
+3. Test with `blog` and `projects` commands
+
 ## Future Enhancements
 
-- Projects command with Supabase integration
-- Blog command with markdown posts
-- Edge Functions for external API integration (Google Maps, IMDb)
-- Separate blog post pages at `/blog/[slug]`
-- API caching table for third-party data
+- Edge Functions for external API integration (Google Maps, IMDb, etc.)
+- Project detail pages at `/projects/[slug]`
+- Search functionality for blog posts
+- RSS feed for blog
+- Blog post series/categories
