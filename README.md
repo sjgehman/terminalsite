@@ -2,9 +2,6 @@
 
 An interactive terminal-style portfolio website built with Next.js and Supabase. Experience my portfolio through a command-line interface with dynamic content loading and theme customization.
 
-🔗 **Live Site**: [Visit the terminal](samuelgehman.com)
-
-
 ## ✨ Features
 
 - **🖥️ Interactive Terminal Interface**: Command-line experience in your browser
@@ -138,7 +135,7 @@ MIT License - feel free to use this as a template for your own portfolio!
 
 - Built with guidance from [Claude Code](https://claude.ai/code)
 - Terminal design inspired by classic Unix terminals
-- Color palette inspired by Claude's warm, readable interface
+- Color palette inspired by Claude's interface
 
 ---
 
